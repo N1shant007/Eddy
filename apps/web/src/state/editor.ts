@@ -1,34 +1,9 @@
 import { create } from 'zustand';
-import type { Asset, Clip, ProjectDoc, Track, TrackKind } from '@eddy/rules';
-import { emptyDoc } from '@eddy/rules';
+import type { Asset, Clip, ProjectDoc } from '@eddy/rules';
+import { emptyDoc, kindForRole, pruneTracks, trackFor } from '@eddy/rules';
 import { uid } from '../data/util';
 
-export const TRACK_ORDER: { kind: TrackKind; name: string; duck: number }[] = [
-  { kind: 'disclaimer', name: 'Disclaimers', duck: 0 },
-  { kind: 'dialogue', name: 'Dialogue', duck: 0 },
-  { kind: 'intro', name: 'Intro / Outro', duck: 10 },
-  { kind: 'positioning', name: 'Product music', duck: 9 },
-  { kind: 'bed', name: 'Background music', duck: 12 },
-  { kind: 'transition', name: 'Transitions', duck: 0 },
-  { kind: 'sfx', name: 'Sound effects', duck: 0 },
-  { kind: 'emotion', name: 'Reactions', duck: 0 },
-];
-export const kindForRole = (role: string): TrackKind =>
-  role === 'outro' ? 'intro' : role === 'pdisclaimer' ? 'disclaimer' : (TRACK_ORDER.some((t) => t.kind === role) ? role : 'sfx') as TrackKind;
-
-/** returns the track of that kind, creating it in the standard order if missing (mutates doc) */
-export function trackFor(doc: ProjectDoc, kind: TrackKind): Track {
-  let t = doc.tracks.find((x) => x.kind === kind);
-  if (!t) {
-    const d = TRACK_ORDER.find((x) => x.kind === kind)!;
-    t = { id: uid('t_'), kind, name: d.name, vol: 0, duck: d.duck, mute: false, solo: false };
-    const order = (k: TrackKind) => TRACK_ORDER.findIndex((x) => x.kind === k);
-    const at = doc.tracks.findIndex((x) => order(x.kind) > order(kind));
-    if (at < 0) doc.tracks.push(t); else doc.tracks.splice(at, 0, t);
-  }
-  return t;
-}
-export const pruneTracks = (doc: ProjectDoc) => { doc.tracks = doc.tracks.filter((t) => t.kind === 'dialogue' || doc.clips.some((c) => c.trackId === t.id)); };
+export { TRACK_ORDER, kindForRole, trackFor, pruneTracks } from '@eddy/rules';
 
 const r2 = (x: number) => Math.round(x * 100) / 100;
 export type SaveState = 'saved' | 'saving' | 'unsaved' | 'error';

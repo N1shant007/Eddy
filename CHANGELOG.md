@@ -1,6 +1,11 @@
 # Changelog
 
-## v2.0.0-alpha.1 — 2026-10-25 (Eddy v2, in progress)
+## v2.0.0-alpha.2 — 2026-10-25
+- Auto-edit ported from v1 into the shared rules package (`packages/rules`), with 12 automated tests: script tags, subtitle timings (.srt/.vtt/ElevenLabs/Whisper JSON), story play / story rewrite, Unfolding Insights under questions, coin chime on every low-interest mention and on savings, warm keys for the guest, harp glide, takeaway ding, caution music, intro (2.5 s full then fade) and CTA intro reprise (-8 dB), one background music at a time, story rewrite in gaps, +1 dB beds, product + AI disclaimers.
+- Auto-edit panel: script box, script and subtitle files, product (guessed from the script), hosts, a cue list explaining every sound with on/off switches.
+- SETUP.md for the free team cloud; CI workflow (typecheck, tests, build); daily Supabase keep-alive.
+
+## v2.0.0-alpha.1 — 2026-10-25
 - New app: React + TypeScript + Vite, Konva timeline, Supabase + Cloudflare R2 (free tiers), Cloudflare Pages hosting.
 - Projects in nested folders: create, rename, move (menu or drag and drop), delete, duplicate, search, sort.
 - Version history per project: autosave, Save version with a note, history panel, compare two versions, restore (saved as a new version, nothing lost), copy a version as a new project.

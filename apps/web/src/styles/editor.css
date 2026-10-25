@@ -68,3 +68,13 @@ textarea.guide { width: 100%; min-height: 60vh; border: 1px solid var(--line-2);
   .ed-main { flex-direction: column; }
   .ed-side { width: auto; height: 40%; border-left: 0; border-top: 1px solid var(--line); }
 }
+
+.report { margin-top: 12px; background: #f3f8f4; border: 1px solid #cfe5d6; border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.5; }
+.report .note { color: #8a5a00; margin-top: 4px; }
+.cues { margin-top: 6px; display: flex; flex-direction: column; gap: 2px; }
+.cue { display: flex; gap: 8px; align-items: flex-start; padding: 6px; border-radius: 7px; font-size: 12.5px; cursor: pointer; }
+.cue:hover { background: #f0f3f9; }
+.cue.off { opacity: 0.5; }
+.cue .cw { display: flex; flex-direction: column; min-width: 0; }
+.cue .ct { font-weight: 600; }
+.cue .cr { color: var(--muted); font-size: 12px; }
