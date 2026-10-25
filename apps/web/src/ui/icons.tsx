@@ -22,6 +22,7 @@ export const IMove = (p: SVGProps<SVGSVGElement>) => <S {...p} d="M3 7a2 2 0 0 1
 export const ICopy = (p: SVGProps<SVGSVGElement>) => <S {...p} d="M9 9h10v10H9zM5 15H4V5h10v1" />;
 export const IPlay = (p: SVGProps<SVGSVGElement>) => <S {...p} d="M7 5l12 7-12 7z" fill="currentColor" />;
 export const IPause = (p: SVGProps<SVGSVGElement>) => <S {...p} d="M7 5h3v14H7zM14 5h3v14h-3z" fill="currentColor" />;
+export const IStart = (p: SVGProps<SVGSVGElement>) => <S {...p} d="M6 5v14M19 5L9 12l10 7z" fill="currentColor" />;
 export const IStop = (p: SVGProps<SVGSVGElement>) => <S {...p} d="M6 6h12v12H6z" fill="currentColor" />;
 export const IUndo = (p: SVGProps<SVGSVGElement>) => <S {...p} d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3" />;
 export const IRedo = (p: SVGProps<SVGSVGElement>) => <S {...p} d="M15 14l5-5-5-5M20 9H10a6 6 0 0 0 0 12h3" />;

@@ -170,34 +170,82 @@ export function buildGraph(ctx: BaseAudioContext, dest: AudioNode, doc: ProjectD
 }
 
 /* ============ live player ============ */
+export const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+
+/** 16-bit WAV of a buffer (used for sped-up previews) */
+function encodeWav(buf: AudioBuffer): Blob {
+  const ch = buf.numberOfChannels, sr = buf.sampleRate, n = buf.length, bytes = 44 + n * ch * 2;
+  const dv = new DataView(new ArrayBuffer(bytes));
+  let p = 0;
+  const ws = (s: string) => { for (const c of s) dv.setUint8(p++, c.charCodeAt(0)); };
+  const u32 = (v: number) => { dv.setUint32(p, v, true); p += 4; }, u16 = (v: number) => { dv.setUint16(p, v, true); p += 2; };
+  ws('RIFF'); u32(bytes - 8); ws('WAVEfmt '); u32(16); u16(1); u16(ch); u32(sr); u32(sr * ch * 2); u16(ch * 2); u16(16); ws('data'); u32(n * ch * 2);
+  const d = Array.from({ length: ch }, (_, c) => buf.getChannelData(c));
+  for (let i = 0; i < n; i++) for (let c = 0; c < ch; c++) { const v = Math.max(-1, Math.min(1, d[c][i])); dv.setInt16(p, v < 0 ? v * 0x8000 : v * 0x7fff, true); p += 2; }
+  return new Blob([dv], { type: 'audio/wav' });
+}
+
 export class Player {
   private graph: Graph | null = null;
   private master: GainNode | null = null;
+  private el: HTMLAudioElement | null = null;
+  private url: string | null = null;
+  private tok = 0;
   private t0 = 0;
   private from = 0;
   playing = false;
+  /** true while a sped-up preview is being prepared */
+  preparing = false;
 
-  async play(doc: ProjectDoc, from: number) {
+  /** At 1× the mix plays live. At other speeds the stretch ahead (up to 10 min) is mixed first,
+      then played with the pitch kept natural, so voices don't sound chipmunky. */
+  async play(doc: ProjectDoc, from: number, speed = 1) {
     this.stop();
+    const tok = ++this.tok;
     await loadAll(doc.clips.map((c) => c.assetHash));
+    if (tok !== this.tok) return;
     const ctx = audioCtx();
     await ctx.resume();
-    this.master = ctx.createGain();
-    this.master.connect(ctx.destination);
-    this.t0 = ctx.currentTime + 0.05;
     this.from = from;
-    this.graph = buildGraph(ctx, this.master, doc, from, this.t0);
+    if (speed === 1) {
+      this.master = ctx.createGain();
+      this.master.connect(ctx.destination);
+      this.t0 = ctx.currentTime + 0.05;
+      this.graph = buildGraph(ctx, this.master, doc, from, this.t0);
+      this.playing = true;
+      return;
+    }
+    this.preparing = true;
     this.playing = true;
+    const to = Math.min(projectEnd(doc) + 0.3, from + 600), sr = 22050;
+    const oc = new OfflineAudioContext(1, Math.max(1, Math.ceil((to - from) * sr)), sr);
+    buildGraph(oc, oc.destination, doc, from, 0, to);
+    const buf = await oc.startRendering();
+    if (tok !== this.tok) return;
+    this.url = URL.createObjectURL(encodeWav(buf));
+    const el = new Audio(this.url) as HTMLAudioElement & { mozPreservesPitch?: boolean; webkitPreservesPitch?: boolean };
+    el.playbackRate = speed;
+    el.preservesPitch = true; el.mozPreservesPitch = true; el.webkitPreservesPitch = true;
+    this.el = el;
+    await el.play();
+    if (tok !== this.tok) { el.pause(); return; }
+    this.preparing = false;
   }
   /** current timeline position while playing */
   position() {
-    return this.playing ? this.from + Math.max(0, audioCtx().currentTime - this.t0) : this.from;
+    if (!this.playing) return this.from;
+    if (this.el) return this.from + this.el.currentTime;
+    if (this.preparing) return this.from;
+    return this.from + Math.max(0, audioCtx().currentTime - this.t0);
   }
   stop() {
+    this.tok++;
     this.graph?.stop();
     this.master?.disconnect();
-    this.graph = null; this.master = null;
-    this.playing = false;
+    this.el?.pause();
+    if (this.url) URL.revokeObjectURL(this.url);
+    this.graph = null; this.master = null; this.el = null; this.url = null;
+    this.playing = false; this.preparing = false;
   }
 }
 

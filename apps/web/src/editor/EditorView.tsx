@@ -2,9 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Clip, ProjectDoc } from '@eddy/rules';
 import { useApp } from '../state/app';
 import { kindForRole, pruneTracks, trackFor, useEditor } from '../state/editor';
-import { encodeMp3, loadAll, loadBuffer, Player, projectEnd, renderMix } from '../audio/engine';
+import { encodeMp3, loadAll, loadBuffer, Player, projectEnd, renderMix, SPEEDS } from '../audio/engine';
 import { askText, openDialog, openMenu } from '../ui/dialogs';
-import { IBack, ICopy, IDownload, IHistory, IPause, IPlay, IRedo, ISave, IScissors, IStop, ITrash, IUndo, IUpload } from '../ui/icons';
+import { IBack, ICopy, IDownload, IHistory, IPause, IPlay, IRedo, ISave, IScissors, IStart, IStop, ITrash, IUndo, IUpload } from '../ui/icons';
 import { HistoryDrawer } from '../projects/HistoryDrawer';
 import { Timeline } from './Timeline';
 import { ClipInspector } from './ClipInspector';
@@ -72,14 +72,32 @@ export function EditorView({ projectId }: { projectId: string }) {
   };
 
   /* ---------- transport ---------- */
+  const [speed, setSpeedS] = useState<number>(() => { try { const v = +(localStorage.getItem('eddy.speed') || 1); return SPEEDS.includes(v) ? v : 1; } catch { return 1; } });
+  const speedRef = useRef(speed);
+  const startAt = async (from: number) => {
+    const s = useEditor.getState();
+    s.setPlaying(true);
+    await player.play(s.doc, from, speedRef.current);
+  };
   const togglePlay = useCallback(async () => {
     const s = useEditor.getState();
     if (player.playing) { const p = player.position(); player.stop(); s.setPlaying(false); s.setPlayhead(p); return; }
     let from = s.playhead;
     if (from >= projectEnd(s.doc) - 0.05) from = 0;
-    await player.play(s.doc, from);
-    s.setPlaying(true);
+    await startAt(from);
   }, []);
+  /** jump to the start and play from there */
+  const playFromStart = useCallback(async () => {
+    const s = useEditor.getState();
+    player.stop();
+    s.setPlayhead(0); s.setScroll(0);
+    await startAt(0);
+  }, []);
+  const setSpeed = (v: number) => {
+    setSpeedS(v); speedRef.current = v;
+    try { localStorage.setItem('eddy.speed', String(v)); } catch { /* ignore */ }
+    if (player.playing) { const p = player.position(); startAt(p); }
+  };
   const stop = () => { player.stop(); const s = useEditor.getState(); s.setPlaying(false); s.setPlayhead(0); s.setScroll(0); };
   const livePos = useCallback(() => {
     if (!player.playing) return null;
@@ -91,7 +109,7 @@ export function EditorView({ projectId }: { projectId: string }) {
   useEffect(() => {
     if (!player.playing) return;
     const p = player.position();
-    player.play(useEditor.getState().doc, p);
+    player.play(useEditor.getState().doc, p, speedRef.current);
   }, [ed.doc]);
 
   /* ---------- clip actions ---------- */
@@ -144,7 +162,11 @@ export function EditorView({ projectId }: { projectId: string }) {
       else if (e.key === '+' || e.key === '=') s.setZoom(s.pps * 1.25);
       else if (e.key === '-') s.setZoom(s.pps / 1.25);
       else if (e.key.toLowerCase() === 'f') fit();
-      else if (e.key === 'Home') { s.setPlayhead(0); s.setScroll(0); }
+      else if (e.key === 'Home') { if (player.playing) playFromStart(); else { s.setPlayhead(0); s.setScroll(0); } }
+      else if (e.key === '[' || e.key === ']') {
+        const i = SPEEDS.indexOf(speedRef.current), j = Math.max(0, Math.min(SPEEDS.length - 1, i + (e.key === ']' ? 1 : -1)));
+        setSpeed(SPEEDS[j]); toast(`Speed ${SPEEDS[j]}×`, undefined, 1200);
+      }
       else if (e.key === 'Escape') s.select(null);
     };
     addEventListener('keydown', k);
@@ -237,9 +259,13 @@ export function EditorView({ projectId }: { projectId: string }) {
         <button className="btn icon" title="Undo (Ctrl+Z)" disabled={!ed.undo.length} onClick={ed.undoStep}><IUndo /></button>
         <button className="btn icon" title="Redo (Ctrl+Shift+Z)" disabled={!ed.redo.length} onClick={ed.redoStep}><IRedo /></button>
         <div className="sep" />
+        <button className="btn icon" title="Play from the beginning (Home)" aria-label="Play from the beginning" onClick={playFromStart}><IStart /></button>
         <button className="btn icon play" title="Play / pause (Space)" onClick={togglePlay}>{ed.playing ? <IPause /> : <IPlay />}</button>
         <button className="btn icon" title="Stop" onClick={stop}><IStop /></button>
         <span className="time">{fmtTime(ed.playhead, true)}</span>
+        <select className="btn sm speed" value={speed} onChange={(e) => setSpeed(+e.target.value)} title="Playback speed ([ and ])" aria-label="Playback speed">
+          {SPEEDS.map((v) => <option key={v} value={v}>{v}×</option>)}
+        </select>
         <button className="btn sm" onClick={() => ed.setZoom(ed.pps / 1.5)} title="Zoom out (−)">−</button>
         <button className="btn sm" onClick={() => ed.setZoom(ed.pps * 1.5)} title="Zoom in (+)">+</button>
         <button className="btn sm" onClick={fit} title="Fit (F)">Fit</button>
@@ -293,7 +319,7 @@ function ExportDialog({ ctl, close }: { ctl: { set: (p: number, l: string) => vo
 
 function Keys() {
   const rows: [string, string][] = [
-    ['Space', 'Play / pause'], ['Click a clip', 'Select it'], ['Drag a clip', 'Move it (snaps to edges and the playhead)'],
+    ['Space', 'Play / pause'], ['Home', 'Back to the start (while playing: play from the start)'], ['[ / ]', 'Slower / faster playback'], ['Click a clip', 'Select it'], ['Drag a clip', 'Move it (snaps to edges and the playhead)'],
     ['Drag clip edges', 'Trim'], ['Del / Backspace', 'Delete the selected clip'], ['Right-click', 'Clip menu'],
     ['S', 'Split at the playhead'], ['Ctrl+D', 'Duplicate'], ['← →', 'Nudge 0.1 s (Shift: 1 s)'],
     ['Ctrl+Z / Ctrl+Shift+Z', 'Undo / redo'], ['Ctrl+S', 'Save version'], ['+ / − / F', 'Zoom in / out / fit'],
