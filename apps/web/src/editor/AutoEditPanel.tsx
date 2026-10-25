@@ -141,7 +141,7 @@ export function AutoEditPanel() {
       <div className="field"><label>Who edits</label></div>
       <div className="seg" role="radiogroup" aria-label="Who edits">
         <button role="radio" aria-checked={eff === 'rules'} className={eff === 'rules' ? 'on' : ''} onClick={() => setEngine('rules')}>Rules (instant)</button>
-        <button role="radio" aria-checked={eff === 'team'} className={eff === 'team' ? 'on' : ''} disabled={!ai} title={ai ? `${aiName} (${ai.model})` : 'Set up AI_PROVIDER and AI_API_KEY in Cloudflare (see SETUP.md)'} onClick={() => setEngine('team')}>{ai ? `${aiName} (team)` : 'Team AI (not set up)'}</button>
+        <button role="radio" aria-checked={eff === 'team'} className={eff === 'team' ? 'on' : ''} disabled={!ai} title={ai ? `${aiName} (${ai.model})` : 'Set up AI_PROVIDER and AI_API_KEY in Cloudflare (see SETUP.md)'} onClick={() => setEngine('team')}>{ai ? `${aiName} (${ai.provider === 'claude.ai' ? 'built in' : 'team'})` : 'Team AI (not set up)'}</button>
         <button role="radio" aria-checked={eff === 'paste'} className={eff === 'paste' ? 'on' : ''} onClick={() => setEngine('paste')}>Copy-paste Claude</button>
       </div>
       <button className="btn primary" style={{ width: '100%', justifyContent: 'center', padding: 10 }} disabled={busy} onClick={run}>

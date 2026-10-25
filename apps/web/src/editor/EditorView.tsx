@@ -14,6 +14,7 @@ import { AskPanel } from './AskPanel';
 import { fmtTime } from './layout';
 import type { ProjectMeta } from '../data/types';
 import { uid } from '../data/util';
+import { saveFile } from '../data/host';
 
 const player = new Player();
 type Tab = 'auto' | 'ask' | 'clip' | 'library' | 'keys';
@@ -208,12 +209,8 @@ export function EditorView({ projectId }: { projectId: string }) {
       ctl.set(0.5, 'Encoding MP3…');
       const blob = await encodeMp3(buf, 192, (p) => ctl.set(0.5 + p * 0.5, 'Encoding MP3…'));
       ctl.set(1, 'Done');
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `${(meta?.name || 'episode').replace(/[^\w\- ]+/g, '').trim() || 'episode'}.mp3`;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(a.href), 60000);
-      toast('MP3 downloaded', 'ok');
+      const r = await saveFile(`${(meta?.name || 'episode').replace(/[^\w\- ]+/g, '').trim() || 'episode'}.mp3`, blob);
+      toast(r === 'saved' ? 'MP3 saved' : 'Save cancelled', r === 'saved' ? 'ok' : undefined);
     } catch (e: any) { ctl.close(); toast(e?.message || String(e), 'error', 6000); }
   };
 

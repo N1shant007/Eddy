@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.0-alpha.4 — 2026-10-25
+- Runs as a claude.ai artifact too: “Claude (built in)” edits through the viewer’s own Claude account, and MP3 exports save through the viewer (as a .zip containing the MP3).
+- Relative asset paths, so the build works from any folder.
+
 ## v2.0.0-alpha.3 — 2026-10-25
 - AI sound designer through a secure Cloudflare function (`/api/ai`): Claude, OpenAI or Gemini; the key stays on the server; team members only; daily limit per person.
 - Free copy-paste mode with your Claude account (no key needed, works in “This browser” mode too).
