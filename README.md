@@ -1,4 +1,4 @@
-# Eddy — AI podcast editor (Bajaj)
+# Eddy — AI podcast editor
 
 Browser-based editor that auto-places intro/outro, background music, SFX and disclaimers on AI-voice podcast episodes.
 
