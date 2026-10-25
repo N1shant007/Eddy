@@ -115,7 +115,7 @@ describe('auto-edit (Bajaj storytelling rules)', () => {
     const { doc } = run();
     const cta = doc.clips.filter((c) => c.assetHash === 'intro' && c.start > 20);
     expect(cta.length).toBe(1);
-    expect(cta[0].gain).toBe(-8);
+    expect(cta[0].gain).toBe(-10);
     const outro = doc.clips.find((c) => c.assetHash === 'outro')!;
     expect(cta[0].start + cta[0].dur).toBeLessThanOrEqual(outro.start + 0.01);
   });
@@ -126,9 +126,9 @@ describe('auto-edit (Bajaj storytelling rules)', () => {
     for (let i = 1; i < m.length; i++) expect(m[i].start).toBeGreaterThanOrEqual(m[i - 1].start + m[i - 1].dur - 0.06);
   });
 
-  it('background music sits at +1 dB', () => {
+  it('background music sits at -10 dB', () => {
     const { doc, kind } = run();
-    for (const c of doc.clips.filter((c) => kind(c.trackId) === 'bed')) expect(c.gain).toBe(1);
+    for (const c of doc.clips.filter((c) => kind(c.trackId) === 'bed')) expect(c.gain).toBe(-10);
   });
 
   it('a harp glide plays when the guest acknowledges', () => {

@@ -3,12 +3,12 @@ import { clamp, r2 } from './script';
 
 /* Turns cues into clips on the timeline. House rules (Eddy v1 v64):
    - AI disclaimer first; the intro starts 0.2 s after it, plays 2.5 s at full volume, fades out over 1.5 s; voices start at 2.5 s
-   - background music at +1 dB; only ONE background music at a time (the later one wins, manual clips always win)
+   - all background music at -10 dB (beds, product music and the intro music under the CTA); only ONE background music at a time (the later one wins, manual clips always win)
    - story rewrite fills every gap from 2 s after the intro until the outro
-   - at the CTA the intro music plays again lightly (-8 dB) under the whole call to action
+   - at the CTA the intro music plays again lightly under the whole call to action
    - closing: product disclaimer (if the episode's product has one), then the AI disclaimer again */
 
-export const INTRO_FULL = 2.5, INTRO_FADE = 1.5, CTA_INTRO_GAIN = -8, BG_GAIN = 1;
+export const INTRO_FULL = 2.5, INTRO_FADE = 1.5, CTA_INTRO_GAIN = -10, BG_GAIN = -10;
 const INTRO_GAP = 0.2;
 
 export const TRACK_ORDER: { kind: TrackKind; name: string; duck: number }[] = [

@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.0.0-alpha.6 — 2026-10-26
+- All background music at -10 dB in v2 (story rewrite, story play, Guest Warm Acoustic, Unfolding Insights, caution, product music and the intro music under the CTA). The opening intro stays at full volume; Warm Close stays at -4 dB.
+
 ## v2.0.0-alpha.5 — 2026-10-26
 - Editor: playback speed (0.5× to 2×, voices keep their natural pitch; [ and ] change it) and a Play from the beginning button (Home while playing).
 

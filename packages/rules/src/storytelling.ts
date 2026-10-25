@@ -68,7 +68,7 @@ export const MOOD_INFO: Record<Mood, { gain: number; why: string; sound: string;
   'guest-product': { gain: -14, why: 'Guest brings up the product for the first time', sound: 'story play', fallback: 'story rewrite|storytelling' },
   curiosity: { gain: -13, why: 'A question or doubt (any speaker)', sound: 'unfolding insights', fallback: 'curious|curiosity' },
   guest: { gain: -14, why: 'Guest shares their situation', sound: 'guest warm acoustic', fallback: 'guest' },
-  cta: { gain: -8, why: 'Call to action: the intro music again, lightly', sound: '1bfl intro track', fallback: 'intro', ctaIntro: true },
+  cta: { gain: -10, why: 'Call to action: the intro music again, lightly', sound: '1bfl intro track', fallback: 'intro', ctaIntro: true },
 };
 
 const t = (lines: ScriptLine[], i: number) => lines[i].t0 ?? i * 10;
