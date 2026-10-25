@@ -50,12 +50,35 @@ It takes about 20 minutes. Total cost: ₹0 within the free limits (500 MB of pr
    - **Variables and Secrets:** add `SUPABASE_URL` and `SUPABASE_ANON_KEY` (same values as above) for the audio function
 4. **Deployments → Retry deployment** so the bindings take effect. Every push to `main` now deploys automatically.
 
-## 4. Keep Supabase awake (GitHub)
+## 4. AI sound designer (optional)
+
+Eddy edits without any AI: the **Rules** engine is free and instant. For an AI edit there are two ways:
+
+- **Copy-paste with Claude (free):** works for everyone, even without the cloud. Eddy copies the request, you paste it into
+  claude.ai, and paste Claude’s answer back. Uses your existing Claude subscription; no API key.
+- **Team AI (one click, needs an API key):** the key is stored only in Cloudflare, never in anyone’s browser. Only signed-in
+  team members can use it, up to `AI_DAILY_LIMIT` requests each per day (default 60).
+  In Cloudflare Pages → **Settings → Variables and Secrets** add:
+
+  | Name | Value |
+  |---|---|
+  | `AI_PROVIDER` | `anthropic` (Claude), `openai` (ChatGPT) or `gemini` |
+  | `AI_API_KEY` | the provider’s API key — choose **Encrypt / Secret** |
+  | `AI_MODEL` | optional. Defaults: `claude-sonnet-5-5`, `gpt-4.1-mini`, `gemini-flash-latest` |
+  | `AI_DAILY_LIMIT` | optional, e.g. `60` |
+
+  Then **Deployments → Retry deployment**. The editor shows “Claude (team)” (or ChatGPT / Gemini) once it’s live.
+
+  Costs: Claude and OpenAI API keys are pay-as-you-go (a few rupees per episode). Gemini has a free tier with no card,
+  but Google may use free-tier prompts to improve its products and people may review them, and daily limits are low;
+  use it only if your scripts aren’t confidential.
+
+## 5. Keep Supabase awake (GitHub)
 
 In the GitHub repo open **Settings → Secrets and variables → Actions → New repository secret** and add
 `SUPABASE_URL` and `SUPABASE_ANON_KEY`. The *Keep Supabase awake* workflow pings the database once a day.
 
-## 5. First run
+## 6. First run
 
 1. Open your Pages address and **Sign in with Google**.
 2. **Audio library → Import starter library** uploads the Bajaj sounds and storytelling guidelines once for the whole team.

@@ -9,10 +9,10 @@
  *   SUPABASE_ANON_KEY
  */
 
-interface Env {
+import { teamUser, type AuthEnv } from '../../../server/auth';
+
+interface Env extends AuthEnv {
   AUDIO: R2Bucket;
-  SUPABASE_URL: string;
-  SUPABASE_ANON_KEY: string;
 }
 
 type R2Bucket = {
@@ -22,23 +22,6 @@ type R2Bucket = {
 };
 
 const MAX_BYTES = 95 * 1024 * 1024;
-
-async function teamUser(req: Request, env: Env): Promise<string | null> {
-  const auth = req.headers.get('Authorization') || '';
-  if (!auth.startsWith('Bearer ') || auth.length < 20) return null;
-  // Ask Supabase who this token belongs to (works with any JWT signing setup)
-  const u = await fetch(`${env.SUPABASE_URL}/auth/v1/user`, { headers: { Authorization: auth, apikey: env.SUPABASE_ANON_KEY } });
-  if (!u.ok) return null;
-  const user = (await u.json()) as { email?: string };
-  // ...and whether they are on the team (is_team() runs with the user's token)
-  const t = await fetch(`${env.SUPABASE_URL}/rest/v1/rpc/is_team`, {
-    method: 'POST',
-    headers: { Authorization: auth, apikey: env.SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
-    body: '{}',
-  });
-  if (!t.ok || (await t.json()) !== true) return null;
-  return user.email || 'member';
-}
 
 export const onRequest = async (ctx: { request: Request; env: Env; params: { hash: string } }) => {
   const { request: req, env, params } = ctx;

@@ -10,12 +10,13 @@ import { Timeline } from './Timeline';
 import { ClipInspector } from './ClipInspector';
 import { LibraryPanel } from './LibraryPanel';
 import { AutoEditPanel } from './AutoEditPanel';
+import { AskPanel } from './AskPanel';
 import { fmtTime } from './layout';
 import type { ProjectMeta } from '../data/types';
 import { uid } from '../data/util';
 
 const player = new Player();
-type Tab = 'auto' | 'clip' | 'library' | 'keys';
+type Tab = 'auto' | 'ask' | 'clip' | 'library' | 'keys';
 
 export function EditorView({ projectId }: { projectId: string }) {
   const app = useApp();
@@ -258,12 +259,13 @@ export function EditorView({ projectId }: { projectId: string }) {
         </div>
         <div className="ed-side">
           <div className="tabs" role="tablist">
-            {([['auto', 'Auto-edit'], ['clip', 'Clip'], ['library', 'Sounds'], ['keys', 'Keys']] as [Tab, string][]).map(([t, l]) => (
+            {([['auto', 'Auto-edit'], ['ask', 'Ask AI'], ['clip', 'Clip'], ['library', 'Sounds'], ['keys', 'Keys']] as [Tab, string][]).map(([t, l]) => (
               <button key={t} role="tab" aria-selected={tab === t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>{l}</button>
             ))}
           </div>
           <div className="side-body">
             {tab === 'auto' && <AutoEditPanel />}
+            {tab === 'ask' && <AskPanel />}
             {tab === 'clip' && <ClipInspector onDelete={deleteSel} />}
             {tab === 'library' && <LibraryPanel onAdd={(h) => dropAsset(h, useEditor.getState().playhead)} />}
             {tab === 'keys' && <Keys />}

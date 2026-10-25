@@ -40,6 +40,19 @@ export function trackFor(doc: ProjectDoc, kind: TrackKind): Track {
 }
 export const pruneTracks = (doc: ProjectDoc) => { doc.tracks = doc.tracks.filter((t) => t.kind === 'dialogue' || doc.clips.some((c) => c.trackId === t.id)); };
 
+/** each script line's start/end on the timeline (through the dialogue clips), or null if that part was cut */
+export function lineTimes(doc: ProjectDoc): ({ s: number; e: number } | null)[] {
+  const t = doc.tracks.find((x) => x.kind === 'dialogue');
+  const dcl = t ? doc.clips.filter((c) => c.trackId === t.id && c.assetHash === doc.dialogueHash).sort((a, b) => a.start - b.start) : [];
+  const absOf = (at: number) => { for (const c of dcl) if (at >= c.offset - 1e-6 && at <= c.offset + c.dur + 1e-6) return c.start + (at - c.offset); return null; };
+  return doc.lines.map((l) => {
+    if (l.t0 == null || l.t1 == null) return null;
+    const a = absOf(l.t0), b = absOf(l.t1);
+    if (a == null && b == null) return null;
+    return { s: (a ?? b)!, e: (b ?? a)! };
+  });
+}
+
 export interface PlaceContext {
   assets: Asset[];
   categories: Category[];

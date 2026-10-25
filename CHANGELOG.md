@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.0-alpha.3 — 2026-10-25
+- AI sound designer through a secure Cloudflare function (`/api/ai`): Claude, OpenAI or Gemini; the key stays on the server; team members only; daily limit per person.
+- Free copy-paste mode with your Claude account (no key needed, works in “This browser” mode too).
+- Auto-edit panel: choose Rules (instant), Team AI or Copy-paste Claude. AI cue sheets keep the script’s tags and the storytelling rules still apply on top.
+- New **Ask AI** tab: change the edit in plain words, or paste exact `EDDY EDIT` instructions that apply without any AI. Every change undoes with Ctrl+Z.
+- 9 more automated tests (AI replies, edit instructions, the function’s auth and key handling).
+
 ## v2.0.0-alpha.2 — 2026-10-25
 - Auto-edit ported from v1 into the shared rules package (`packages/rules`), with 12 automated tests: script tags, subtitle timings (.srt/.vtt/ElevenLabs/Whisper JSON), story play / story rewrite, Unfolding Insights under questions, coin chime on every low-interest mention and on savings, warm keys for the guest, harp glide, takeaway ding, caution music, intro (2.5 s full then fade) and CTA intro reprise (-8 dB), one background music at a time, story rewrite in gaps, +1 dB beds, product + AI disclaimers.
 - Auto-edit panel: script box, script and subtitle files, product (guessed from the script), hosts, a cue list explaining every sound with on/off switches.

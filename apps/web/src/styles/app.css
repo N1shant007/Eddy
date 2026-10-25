@@ -133,3 +133,17 @@ input, select, textarea { font: inherit; color: inherit; }
   .search { width: 100%; }
   .nav button { padding: 8px 8px; }
 }
+.steps { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 14px; }
+.step { display: flex; align-items: center; gap: 10px; }
+.step b { width: 22px; height: 22px; border-radius: 50%; background: #e6eefc; color: var(--navy-2); display: grid; place-items: center; font-size: 12px; flex: none; }
+.step span { flex: 1; }
+.seg { display: flex; border: 1px solid var(--line-2); border-radius: 9px; overflow: hidden; margin-bottom: 8px; }
+.seg button { flex: 1; border: 0; background: #fff; padding: 7px 6px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.seg button + button { border-left: 1px solid var(--line-2); }
+.seg button.on { background: #fdeedf; color: #9b4a07; }
+.seg button:disabled { opacity: 0.45; cursor: default; }
+.chat { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.msg { padding: 8px 10px; border-radius: 10px; font-size: 13px; line-height: 1.45; white-space: pre-wrap; }
+.msg.u { background: #e6eefc; align-self: flex-end; max-width: 92%; }
+.msg.a { background: #f3f8f4; border: 1px solid #cfe5d6; }
+.msg.e { background: #fdecea; color: #8c2318; }
