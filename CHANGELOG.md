@@ -1,6 +1,14 @@
 # Changelog
 
-Versions match the published Eddy artifact on claude.ai.
+## v2.0.0-alpha.1 — 2026-10-25 (Eddy v2, in progress)
+- New app: React + TypeScript + Vite, Konva timeline, Supabase + Cloudflare R2 (free tiers), Cloudflare Pages hosting.
+- Projects in nested folders: create, rename, move (menu or drag and drop), delete, duplicate, search, sort.
+- Version history per project: autosave, Save version with a note, history panel, compare two versions, restore (saved as a new version, nothing lost), copy a version as a new project.
+- Editor: import episode audio, add sounds from the library (drag or +), move/trim/split/duplicate/delete clips, overlapping clips in rows, clip volume and fades, track mute/solo/volume, music dips under voices, undo/redo, MP3 export in the background.
+- Audio library: categories, upload, rename, tags, move, delete, preview; one-click Bajaj starter library. Guidelines editor with a default.
+- Works with no account (this browser) or as a shared team cloud with Google sign-in.
+
+v1 versions below match the published Eddy artifact on claude.ai.
 
 ## v64 — 2026-10-24
 - Only one background music plays at a time: where two overlap, the later one takes over; the earlier one resumes after it if time is left. Manual clips always win.
