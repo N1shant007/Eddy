@@ -1,5 +1,8 @@
 # Changelog
 
+## v1 v65 — 2026-10-26
+- All background music at -14 dB (story rewrite, story play, Guest Warm Acoustic, Unfolding Insights, caution, product music and the intro music under the CTA). The opening intro stays at full volume; Warm Close stays at -4 dB.
+
 ## v2.0.0-alpha.4 — 2026-10-25
 - Runs as a claude.ai artifact too: “Claude (built in)” edits through the viewer’s own Claude account, and MP3 exports save through the viewer (as a .zip containing the MP3).
 - Relative asset paths, so the build works from any folder.

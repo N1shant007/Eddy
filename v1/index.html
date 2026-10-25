@@ -1643,12 +1643,12 @@ function addClip(assetId,trackId,start,o={}){const a=S.assets.get(assetId);if(!a
 /* sound matching: category first, then tag words; rotate to avoid repeats */
 const useCount={};
 /* House rule: wherever the conversation has no background music, run story rewrite (from 2 s after the intro to the outro). */
-/* House rule: every background music clip (beds and product music) sits at +1 dB; the bed track still ducks under the voices. */
-const BG_GAIN=1;
+/* House rule: every background music clip (beds, product music and the CTA intro music) sits at -14 dB; the bed track still ducks under the voices. */
+const BG_GAIN=-14;
 /* House rule: the opening intro plays at full volume for 2.5 s, then fades out; the voices start right at 2.5 s. */
 const INTRO_FULL=2.5,INTRO_FADE=1.5;
 /* House rule: at the CTA the intro music plays again, lightly (the intro track also ducks under the voices). */
-const CTA_INTRO_GAIN=-8;
+const CTA_INTRO_GAIN=-14;
 /* House rule: only ONE background music plays at a time. Where two overlap, the one that starts later wins
    and the earlier one stops there (and resumes after it, if there is time left). Manually placed clips always win. */
 const isMusicClip=c=>{if(c.fixed)return false;const t=trackById(c.trackId);return !!t&&(t.kind==='intro'||t.kind==='bed'||t.kind==='positioning');};
