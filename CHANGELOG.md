@@ -1,5 +1,12 @@
 # Changelog
 
+## v3.0.0 — 2026-10-28 (branch v3-gcp)
+- New `v3/` app for the pipeline's Google Cloud stack: one Cloud Run container with an Express server (`server.ts`) and a React 19 + Vite 6 + Tailwind 4 frontend.
+- Firestore replaces Supabase/Postgres; a Cloud Storage bucket replaces Cloudflare R2 (8 MB multi-part uploads to stay under Cloud Run's 32 MB request limit).
+- Team passcode gate instead of Google sign-in; Gemini on Vertex AI (service account, no keys) for Auto-edit and Ask AI.
+- Pipeline hand-off: `POST /api/pipeline/episodes` takes the script, subtitles and Wondercraft audio and creates a project that auto-edits on first open; **Save final mix** stores the MP3 in Cloud Storage, optionally Google Drive, and notifies the pipeline.
+- All v2 features kept, including version history, folders, playback speed and -10 dB background music. 32 automated tests.
+
 ## v2.0.0-alpha.6 — 2026-10-26
 - All background music at -10 dB in v2 (story rewrite, story play, Guest Warm Acoustic, Unfolding Insights, caution, product music and the intro music under the CTA). The opening intro stays at full volume; Warm Close stays at -4 dB.
 

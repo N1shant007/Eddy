@@ -11,6 +11,7 @@ projects, folders and full version history for the team.
 | `apps/web/functions` | Cloudflare Pages Function that stores audio on R2 (`/api/audio/<sha256>`) |
 | `packages/rules` | Shared data model and the auto-edit rules engine |
 | `supabase/migrations` | Database schema: folders, projects, versions, library, guidelines, team access |
+| `v3/` | **Eddy v3** for Google Cloud: Express + React 19 + Vite 6 + Tailwind 4, Firestore, Cloud Storage, Gemini on Vertex AI, team passcode, pipeline hand-off. See `v3/README.md` |
 | `v1/` | Eddy v1 (single-file app, kept for reference until v2 replaces it) |
 
 ## Run it locally
