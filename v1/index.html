@@ -1065,6 +1065,7 @@ const SETTING_LABELS={hosts:'Host names (comma separated; blank = first two spea
 
 const DEFAULT_GUIDELINES=`INTRO: After the opening disclaimer, the intro music plays at full volume for 2.5 s and then fades out. The voices start right at 2.5 s.
 ONE MUSIC AT A TIME: Never play two background music tracks at the same time.
+CTA: When the call to action begins (before the outro), play the same intro music again, lightly and low under the voices, for the whole CTA. No other background music plays during it; the outro follows.
 OUTRO: Outro music enters about 2 s before the final line ends and plays for 7 s, fading out at the end.
 TRANSITIONS: Use a riser or stinger when the conversation moves to a new segment or topic.
 ENGAGEMENT SFX: Roughly one SFX every 45-90 s of talk, never two within 6 s. Whoosh for topic pivots and introductions, pop for quick facts or numbers, ding for key takeaways.
@@ -1123,7 +1124,10 @@ function catOptions(sel,{auto=false}={}){const og=g=>!S.categories.some(c=>c.gro
   return (auto?`<option value="auto"${sel==='auto'?' selected':''}>Auto-detect from file names</option>`:'')+og('fixed')+og('bgm')+og('sfx');}
 function ensureCautionCat(){for(const [id,re] of [['k_hosts',/^hosts?$/i],['k_guest',/^guests?$/i],['k_story',/^story/i],['k_drum',/drum/i],['k_char',/character/i],['k_curious',/curio/i],['k_insight',/insight/i],['k_savings',/saving/i],['k_caution',/caution/i]]){
   if(S.categories.some(c=>c.id===id||re.test(c.name)))continue;const at=S.categories.findIndex(c=>c.group==='sfx');const c={...DEFAULT_CATEGORIES.find(x=>x.id===id)};at<0?S.categories.push(c):S.categories.splice(at,0,c);}}
-function ensureCautionGuideline(){for(const p of S.guidePresets)p.text=p.text.replace(/^OUTRO: Outro music enters about 2 s before the final line ends and plays out\.$/m,'OUTRO: Outro music enters about 2 s before the final line ends and plays for 7 s, fading out at the end.');for(const key of ['HOSTS','CURIOSITY','INSIGHT','SAVINGS','CAUTION'])for(const p of S.guidePresets)if(!new RegExp('^'+key+':','m').test(p.text)){const line=DEFAULT_GUIDELINES.split('\n').find(l=>l.startsWith(key+':'));p.text=/^MIX:/m.test(p.text)?p.text.replace(/^MIX:/m,line+'\nMIX:'):p.text.trimEnd()+'\n'+line;}if(activePreset())S.guidelines=activePreset().text;}
+/* House rule for every guideline set: the intro music plays again, lightly, under the CTA (added where missing). */
+const CTA_RULE=DEFAULT_GUIDELINES.split('\n').find(l=>l.startsWith('CTA:'));
+function ensureCtaRule(p){if(!p||/^CTA:/m.test(p.text||''))return;const t=p.text||'';p.text=/^OUTRO:/m.test(t)?t.replace(/^OUTRO:/m,CTA_RULE+'\nOUTRO:'):/^MIX:/m.test(t)?t.replace(/^MIX:/m,CTA_RULE+'\nMIX:'):(t.trimEnd()?t.trimEnd()+'\n':'')+CTA_RULE;}
+function ensureCautionGuideline(){for(const p of S.guidePresets)ensureCtaRule(p);for(const p of S.guidePresets)p.text=p.text.replace(/^OUTRO: Outro music enters about 2 s before the final line ends and plays out\.$/m,'OUTRO: Outro music enters about 2 s before the final line ends and plays for 7 s, fading out at the end.');for(const key of ['HOSTS','CURIOSITY','INSIGHT','SAVINGS','CAUTION'])for(const p of S.guidePresets)if(!new RegExp('^'+key+':','m').test(p.text)){const line=DEFAULT_GUIDELINES.split('\n').find(l=>l.startsWith(key+':'));p.text=/^MIX:/m.test(p.text)?p.text.replace(/^MIX:/m,line+'\nMIX:'):p.text.trimEnd()+'\n'+line;}if(activePreset())S.guidelines=activePreset().text;}
 function ensureDisclaimerCat(){let hits=S.categories.filter(c=>c.role==='disclaimer'||/ai[\s_-]*disclaim/i.test(c.name));
   if(!hits.length)hits=[{...DEFAULT_CATEGORIES[0]}];
   for(const c of hits){c.role='disclaimer';c.group='fixed';if(!c.notes)c.notes=DEFAULT_CATEGORIES[0].notes;}
@@ -2298,7 +2302,7 @@ $('#gNew').onclick=()=>{modal(`<h2>New guideline set</h2><div class="kv"><label 
   <div class="btnrow"><button class="btn primary" id="gnOk">Create</button><button class="btn" data-close>Cancel</button></div>`);
   $('#gnOk').onclick=()=>{const name=$('#gnName').value.trim()||'Guidelines '+(S.guidePresets.length+1);const f=$('#gnFrom').value;
     const text=f==='starter'?starterGuidelines():f==='copy'?activePreset().text:f==='default'?DEFAULT_GUIDELINES:'';
-    const p={id:uid('g_'),name,text};S.guidePresets.push(p);S.activeGuide=p.id;S.guidelines=text;renderPresets();saveSoon();closeModal();$('#guidelines').focus();toast(`“${name}” created and active`);};};
+    const p={id:uid('g_'),name,text};ensureCtaRule(p);S.guidePresets.push(p);S.activeGuide=p.id;S.guidelines=p.text;renderPresets();saveSoon();closeModal();$('#guidelines').focus();toast(`“${name}” created and active`);};};
 $('#gEdit').onclick=()=>{const p=activePreset();modal(`<h2>Guideline set</h2><div class="kv"><label style="grid-column:1/-1">Name<input id="geName" value="${esc(p.name)}" style="font-family:var(--f-ui)"></label></div>
   <div class="btnrow"><button class="btn primary" id="geOk">Save name</button><button class="btn" id="geDup">Duplicate</button><button class="btn" id="geDel" style="color:var(--danger)"${S.guidePresets.length<2?' disabled':''}>Delete set</button><button class="btn" data-close>Cancel</button></div>`);
   $('#geOk').onclick=()=>{p.name=$('#geName').value.trim()||p.name;renderPresets();saveSoon();closeModal();};

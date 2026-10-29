@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import type { Asset, Category, Guideline } from '@eddy/rules';
 import { makeBackend } from '../data/backend';
 import type { Backend, Folder, ProjectMeta, UserInfo } from '../data/types';
+import { withHouseRules } from '../data/houseRules';
+
 
 export type View = 'projects' | 'editor' | 'library' | 'guidelines';
 
@@ -66,8 +68,12 @@ export const useApp = create<AppState>((set, get) => ({
   },
   async refreshLibrary() {
     const be = get().be;
-    const [categories, assets, guidelines] = await Promise.all([be.listCategories(), be.listAssets(), be.listGuidelines()]);
+    const [categories, assets, loaded] = await Promise.all([be.listCategories(), be.listAssets(), be.listGuidelines()]);
+    // every guideline set carries the house rules (e.g. intro music under the CTA): add them where missing and save
+    const stale = loaded.filter((g) => withHouseRules(g.text || '') !== (g.text || ''));
+    const guidelines = loaded.map((g) => (stale.includes(g) ? { ...g, text: withHouseRules(g.text || '') } : g));
     set({ categories, assets, guidelines });
+    for (const g of stale) void be.saveGuideline({ ...g, text: withHouseRules(g.text || '') }).catch(() => {});
   },
   openFolder(id) {
     set({ currentFolder: id, view: 'projects' });

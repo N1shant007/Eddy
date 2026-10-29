@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.0.0-alpha.7 and v1 v66 — 2026-10-29
+- Every guideline set now carries the CTA rule: "When the call to action begins (before the outro), play the same intro music again, lightly and low under the voices, for the whole CTA. No other background music plays during it; the outro follows." Added to the built-in presets (House style, Bajaj episode style, Bajaj storytelling style), to guideline sets saved earlier (added automatically when Eddy loads, placed before OUTRO) and to every new set.
+
 ## v2.0.0-alpha.6 — 2026-10-26
 - All background music at -10 dB in v2 (story rewrite, story play, Guest Warm Acoustic, Unfolding Insights, caution, product music and the intro music under the CTA). The opening intro stays at full volume; Warm Close stays at -4 dB.
 
